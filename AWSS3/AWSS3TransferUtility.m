@@ -17,6 +17,8 @@
 #import "AWSS3PreSignedURL.h"
 #import "AWSSynchronizedMutableDictionary.h"
 
+#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
+
 NSString *const AWSS3TransferUtilityIdentifier = @"com.amazonaws.AWSS3TransferUtility.Identifier";
 NSTimeInterval const AWSS3TransferUtilityTimeoutIntervalForResource = 50 * 60; // 50 minutes
 NSString *const AWSS3TransferUtilityUserAgent = @"transfer-utility";
@@ -154,6 +156,11 @@ static AWSS3TransferUtility *_defaultS3TransferUtility = nil;
             configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:_sessionIdentifier];
         } else {
             configuration = [NSURLSessionConfiguration backgroundSessionConfiguration:_sessionIdentifier];
+        }
+
+        //        shared with app extension to access NSURLSession - added by Viren
+        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0")) {
+            configuration.sharedContainerIdentifier = @"group.it.latergram.latergram.sharevia";
         }
 
         configuration.timeoutIntervalForResource = AWSS3TransferUtilityTimeoutIntervalForResource;
